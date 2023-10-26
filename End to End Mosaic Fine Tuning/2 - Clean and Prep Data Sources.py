@@ -2,7 +2,9 @@
 # MAGIC %md
 # MAGIC
 # MAGIC # Data Clean and Prep to Standard Format
+# MAGIC -----
 # MAGIC
+# MAGIC #### Overview and Steps
 # MAGIC 1. Consolidate into single "training" and "testing" dataset with similar prompts
 # MAGIC 2. Clean PII by adding other rule-based or model-based filters in this pipeline
 # MAGIC 3. Remove "bad" characters
@@ -157,6 +159,12 @@ spark.udf.register("scrub_input_string_NER", scrub_input_string_NER)
 # MAGIC
 # MAGIC     return format_instruction_to_prompt(instruction, input_context)
 # MAGIC $$
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ## All of this can be scaled and distributed to scale
 
 # COMMAND ----------
 

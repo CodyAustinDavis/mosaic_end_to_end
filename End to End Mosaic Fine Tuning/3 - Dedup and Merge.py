@@ -1,7 +1,10 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC
-# MAGIC ## Data Clean and Prep to Standard Format
+# MAGIC # Data Clean and Prep to Standard Format
+# MAGIC -----
+# MAGIC
+# MAGIC #### Overview and Steps
 # MAGIC
 # MAGIC 1. Use LSH Hashing to De-dup likely duplicate prompts, especially if reading in from multiple sources
 # MAGIC 2. Quarantine Duplicates and any other data quality issues into "dups" table to investigate

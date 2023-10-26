@@ -3,7 +3,10 @@
 # MAGIC
 # MAGIC # Mosaic End to End Data Pipeline for Fine Tuning Demo
 # MAGIC
-# MAGIC ## Description:
+# MAGIC -----
+# MAGIC ## Data Ingestion
+# MAGIC
+# MAGIC #### Overview:
 # MAGIC This series shows the end-to-end process of ingesting a custom data set to fine tune a foundation model. The demo goes through data ingestion, cleaning, deduping, model fine-tuning, model registration, and model serving all in Databricks on Unity Catalog
 # MAGIC
 # MAGIC

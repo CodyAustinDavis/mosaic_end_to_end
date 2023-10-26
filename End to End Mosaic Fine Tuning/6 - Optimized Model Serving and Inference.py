@@ -1,13 +1,15 @@
 # Databricks notebook source
-# DBTITLE 1,a
 # MAGIC %md
-# MAGIC # Optimized MPT serving example
+# MAGIC # Optimized MPT serving
 # MAGIC
+# MAGIC -----
+# MAGIC
+# MAGIC #### Overview
 # MAGIC Optimized LLM Serving enables you to take your fine-tuned LLM from MosaicML and deploy them on Databricks Model Serving with automatic optimizations for improved latency and throughput on GPUs. Currently, Databricks supports optimizations for Llama2 and Mosaic MPT class of models.
 # MAGIC
 # MAGIC This example walks through:
 # MAGIC
-# MAGIC 1. Loading the fine-tuned model in Hugging Face `transformers` format from DBFS
+# MAGIC 1. Loading the fine-tuned model in Hugging Face `transformers` format from DBFS or Unity Catalog volumes
 # MAGIC 2. Logging the model in an optimized serving supported format into the Databricks Unity Catalog or Workspace Registry
 # MAGIC 3. Enabling optimized serving on the model
 
@@ -27,6 +29,7 @@
 
 # COMMAND ----------
 
+# DBTITLE 1,Library installation
 # Update and install required dependencies
 !pip install -U mlflow
 !pip install -U transformers
@@ -35,7 +38,18 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-# DBTITLE 1,Model Registration Params
+# DBTITLE 1,Load libraries
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import mlflow
+from mlflow.models.signature import ModelSignature
+from mlflow.types.schema import ColSpec, Schema
+import numpy as np
+import os
+import torch
+
+# COMMAND ----------
+
+# DBTITLE 1,Set config values
 ############ Your input starts here ############
 
 # Provide the url path to your remote model checkpoint directory
@@ -72,40 +86,48 @@ else:
 LOCAL_CHECKPOINT_PATH = "/tmp/mosaicml/"
 LOCAL_MODEL_NAME = "local_model"
 
-############  DO NOT MODIFY  ############
-
-# COMMAND ----------
-
-# DBTITLE 1,Loading Model Checkpoints
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import mlflow
-from mlflow.models.signature import ModelSignature
-from mlflow.types.schema import ColSpec, Schema
-import numpy as np
-import os
-import torch
-
-
-MODEL_REGISTRATION_TIMEOUT = 1200
-
-print(f"⏳ Loading your model checkpoint...")
-
 MODEL_PRECISION_MAP = {
   'float32': torch.float32,
   'float16': torch.float16,
   'bfloat16': torch.bfloat16,
 }
 
+############  DO NOT MODIFY  ############
+
+# Set the name of the MLflow endpoint
+endpoint_name = 'mpt-7b-instruct-e2e-custom'
+
+# Name of the registered MLflow model
+model_name = REGISTERED_MODEL_NAME 
+
+# Get the latest version of the MLflow model
+# model_version = 1
+
+# Specify the type of compute (CPU, GPU_SMALL, GPU_MEDIUM, etc.)
+# workload_type = "GPU_MEDIUM_4" 
+workload_type = "GPU_MEDIUM" 
+
+# Specify the compute scale-out size(Small, Medium, Large, etc.)
+workload_size = "Small" 
+
+# Specify Scale to Zero(only supported for CPU endpoints)
+scale_to_zero = False 
+
+# Get the API endpoint and token for the current notebook context
+API_ROOT = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiUrl().get() 
+API_TOKEN = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+
+# COMMAND ----------
+
+# DBTITLE 1,Load model artifacts from MosaicML
+MODEL_REGISTRATION_TIMEOUT = 1200
+
+print(f"⏳ Loading your model checkpoint...")
+
 tokenizer = AutoTokenizer.from_pretrained(MODEL_CHECKPOINT_PATH, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(MODEL_CHECKPOINT_PATH, trust_remote_code=True, torch_dtype=MODEL_PRECISION_MAP[MODEL_PRECISION])
 
 print(f"✅ Done!")
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC
-# MAGIC ## Register Model in Databricks Model Serving
 
 # COMMAND ----------
 
@@ -120,6 +142,7 @@ print(f"✅ Done!")
 
 # COMMAND ----------
 
+# DBTITLE 1,Log and register model to MLflow
 # Log the model with its details such as artifacts, pip requirements and input example
 
 # Define the model input and output schema
@@ -154,10 +177,8 @@ input_example = {
 print(f"⏳ Registering your model registry...")
 
 if USE_UNITY_CATALOG:
-
   # Log the model to the unity catalog, since that is much faster.
   mlflow.set_registry_uri("databricks-uc")
-  
   with mlflow.start_run() as run:
       components = {
           "model": model,
@@ -206,6 +227,9 @@ print(f"✅ Done!")
 
 # COMMAND ----------
 
+# DBTITLE 1,Get latest available model version (the one we just created)
+import mlflow
+
 client = mlflow.MlflowClient()
 
 if USE_UNITY_CATALOG:
@@ -227,6 +251,7 @@ if USE_UNITY_CATALOG:
 
 # COMMAND ----------
 
+# DBTITLE 1,Set model serving configs
 # Set the name of the MLflow endpoint
 endpoint_name = 'mpt-7b-instruct-e2e-custom'
 
@@ -252,6 +277,7 @@ API_TOKEN = dbutils.notebook.entry_point.getDbutils().notebook().getContext().ap
 
 # COMMAND ----------
 
+# DBTITLE 1,Model serving API utility functions
 import requests
 import json
 
@@ -318,6 +344,7 @@ print(status)
 
 # COMMAND ----------
 
+# DBTITLE 1,Write Reusable Function to Query Endpoints from Anywhere
 import requests
 import json
 
@@ -344,6 +371,13 @@ def query_endpoint(prompt:str) -> dict:
     # print(json.dumps(response.json()))
 
     return response.json()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ### Step 3 - Use the Endpoint to Prompt the Model!
+# MAGIC
 
 # COMMAND ----------
 
