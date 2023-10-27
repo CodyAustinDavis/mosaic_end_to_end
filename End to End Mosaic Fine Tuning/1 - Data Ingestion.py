@@ -7,7 +7,13 @@
 # MAGIC ## Data Ingestion
 # MAGIC
 # MAGIC #### Overview:
-# MAGIC This series shows the end-to-end process of ingesting a custom data set to fine tune a foundation model. The demo goes through data ingestion, cleaning, deduping, model fine-tuning, model registration, and model serving all in Databricks on Unity Catalog
+# MAGIC This series shows the end-to-end process of ingesting a custom data set to fine tune a foundation model. The demo goes through data ingestion, cleaning, deduping, model fine-tuning, model registration, and model serving all in Databricks on Unity Catalog. 
+# MAGIC
+# MAGIC <b> Steps: </b>
+# MAGIC
+# MAGIC 1. Ingest 2 Datasets from Hugging Face
+# MAGIC 2. Creaate Database Schema
+# MAGIC 3. Load Bronze Tables of each dataset (or stream)
 # MAGIC
 # MAGIC
 # MAGIC

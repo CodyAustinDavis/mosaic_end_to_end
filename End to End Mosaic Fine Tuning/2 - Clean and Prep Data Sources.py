@@ -5,9 +5,10 @@
 # MAGIC -----
 # MAGIC
 # MAGIC #### Overview and Steps
-# MAGIC 1. Consolidate into single "training" and "testing" dataset with similar prompts
+# MAGIC 1. Consolidate multiple data sources into single "training" and "testing" dataset
 # MAGIC 2. Clean PII by adding other rule-based or model-based filters in this pipeline
 # MAGIC 3. Remove "bad" characters
+# MAGIC 4. Standardize Prompt and Response formatting across data sets with Registered UC Function
 # MAGIC 4. Save to clean / silver data set for model training / fine tuning 
 
 # COMMAND ----------
