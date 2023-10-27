@@ -378,6 +378,16 @@ def query_endpoint(prompt:str) -> dict:
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC
+# MAGIC ## Generate Some Prompts!
+# MAGIC
+# MAGIC These prompts can come from a data pipeline, a data app, or a manual REST API call. 
+# MAGIC
+
+# COMMAND ----------
+
+# DBTITLE 1,Standard English Context Ask
 prompt1 = "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWhat is Apache Spark?\n\n### Response:\n"
 
 results1 = query_endpoint(prompt1)
@@ -385,6 +395,7 @@ print(results1["predictions"][0]["candidates"][0]["text"])
 
 # COMMAND ----------
 
+# DBTITLE 1,Generate Python Function Ask
 prompt2 = "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a recursive Python function.\n\n### Response:\n"
 
 results2 = query_endpoint(prompt2)
@@ -392,6 +403,7 @@ print(results2["predictions"][0]["candidates"][0]["text"])
 
 # COMMAND ----------
 
+# DBTITLE 1,English to Python Function Example
 prompt3 = "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nWrite a Python function that finds the most rare record in a dataset.\n\n### Response:\n"
 
 results3 = query_endpoint(prompt3)
