@@ -1,17 +1,19 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Optimized MPT serving
+# MAGIC # Optimized MPT Serving and Inference
 # MAGIC
 # MAGIC -----
 # MAGIC
-# MAGIC #### Overview
+# MAGIC #### Overview 
+# MAGIC
 # MAGIC Optimized LLM Serving enables you to take your fine-tuned LLM from MosaicML and deploy them on Databricks Model Serving with automatic optimizations for improved latency and throughput on GPUs. Currently, Databricks supports optimizations for Llama2 and Mosaic MPT class of models.
 # MAGIC
-# MAGIC This example walks through:
+# MAGIC <b This notebook walks through: </b>
 # MAGIC
 # MAGIC 1. Loading the fine-tuned model in Hugging Face `transformers` format from DBFS or Unity Catalog volumes
 # MAGIC 2. Logging the model in an optimized serving supported format into the Databricks Unity Catalog or Workspace Registry
 # MAGIC 3. Enabling optimized serving on the model
+# MAGIC 4. Sending Prompts to the Serving Endpoint
 
 # COMMAND ----------
 
@@ -177,8 +179,10 @@ input_example = {
 print(f"⏳ Registering your model registry...")
 
 if USE_UNITY_CATALOG:
+
   # Log the model to the unity catalog, since that is much faster.
   mlflow.set_registry_uri("databricks-uc")
+  
   with mlflow.start_run() as run:
       components = {
           "model": model,
@@ -344,7 +348,7 @@ print(status)
 
 # COMMAND ----------
 
-# DBTITLE 1,Write Reusable Function to Query Endpoints from Anywhere
+# DBTITLE 1,Utility function for querying endpoint - note the max_tokens and temperature settings
 import requests
 import json
 
@@ -371,13 +375,6 @@ def query_endpoint(prompt:str) -> dict:
     # print(json.dumps(response.json()))
 
     return response.json()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC
-# MAGIC ### Step 3 - Use the Endpoint to Prompt the Model!
-# MAGIC
 
 # COMMAND ----------
 
