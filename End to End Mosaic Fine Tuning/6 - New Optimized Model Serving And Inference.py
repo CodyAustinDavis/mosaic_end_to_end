@@ -40,6 +40,10 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
+# MAGIC %pip install einops
+
+# COMMAND ----------
+
 # DBTITLE 1,Load libraries
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import mlflow
@@ -48,6 +52,7 @@ from mlflow.types.schema import ColSpec, Schema
 import numpy as np
 import os
 import torch
+import einops
 
 # COMMAND ----------
 

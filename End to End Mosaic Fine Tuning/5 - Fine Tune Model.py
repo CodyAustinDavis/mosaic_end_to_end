@@ -30,7 +30,7 @@ mcli.set_api_key(
 
 # COMMAND ----------
 
-# DBTITLE 1,Kick off Fine Tuning run on Mosaic Platform
+# DBTITLE 1,Kick off Fine Tuning run on Mosaic Platform Read from S3 or UC Volume Directly
 ## Insert UC Volume or your own S3 Paths here
 
 run = finetune(
