@@ -189,10 +189,12 @@ if USE_UNITY_CATALOG:
   mlflow.set_registry_uri("databricks-uc")
   
   with mlflow.start_run() as run:
+      
       components = {
           "model": model,
           "tokenizer": tokenizer,
       }
+
       mlflow.transformers.log_model(
           transformers_model=components,
           artifact_path="model",
@@ -204,6 +206,7 @@ if USE_UNITY_CATALOG:
       )
 else:
   with mlflow.start_run() as run:
+      
       components = {
           "model": model,
           "tokenizer": tokenizer,
@@ -312,7 +315,7 @@ def create_or_update_endpoint(endpoint_name:str, data:dict, headers:dict) -> dic
         response = update_endpoint(endpoint_name, data, headers)
     else:
         print(f"creating new endpoint")
-        response = create_endpoint()
+        response = create_endpoint(data, headers)
     print(json.dumps(response, indent=4))
     return response
 
